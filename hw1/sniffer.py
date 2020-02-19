@@ -3,24 +3,32 @@ import cryptography
 import getopt
 from datetime import datetime
 load_layer('http')
-load_layer('tcp')
+load_layer('tls')
 
 def process_packet(packet):
-    print(packet.show2())
+    # print(packet.show2())
+    time = str(datetime.fromtimestamp(packet.time))
+    ipLayer = packet.getlayer("IP")
+    ethLayer = packet.getlayer("TCP")
 
     if packet.haslayer("HTTPRequest"):
         # print(packet.show())
         httpLayer = packet.getlayer("HTTP Request")
-        ipLayer = packet.getlayer("IP")
-        ethLayer = packet.getlayer("TCP")
-        time = datetime.fromtimestamp(packet.time)
-        strTime = str(time)
-        
-        print(strTime + " HTTP " + str(ipLayer.src) + ":" + str(ethLayer.sport) + " -> " + str(ipLayer.dst) + ":" + str(ethLayer.dport) + " " + str(httpLayer.Host.decode('UTF-8')) 
+        print(time + " HTTP " + str(ipLayer.src) + ":" + str(ethLayer.sport) + " -> " + str(ipLayer.dst) + ":" + str(ethLayer.dport) + " " + str(httpLayer.Host.decode('UTF-8')) 
             + " " + str(httpLayer.Method.decode('UTF-8')) + " " + str(httpLayer.Path.decode('UTF-8')))
 
-    if packet.haslayer("tls"):
-        print("packet has tls")
+    if packet.haslayer("TLS"):
+        tlsLayer = packet.getlayer("TLS")
+        packet.show2()
+        # print(tlsLayer.type)
+        if tlsLayer.type == 22:
+            print("aa")
+
+            #####33print(tlsLayer.msg)
+            exit()
+
+        #print(packet.show2())
+        #exit()
     	#print("packet has tcp")
 
 
@@ -35,7 +43,15 @@ try:
     for currentArgument, currentValue in arguments: 
   
         if currentArgument in ("-r"): 
-            print ("-r specified") 
+            print ("-r specified")
+            print(currentValue)
+            packets = rdpcap(currentValue)
+            for packet in packets:
+                process_packet(packet)
+
+
+           
+                
               
         elif currentArgument in ("-i"): 
             print ("-i specified") 
@@ -46,6 +62,7 @@ except getopt.error as err:
 
 
 sniff(prn=process_packet, count=100)
+
 
 
 
