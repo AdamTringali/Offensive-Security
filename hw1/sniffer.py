@@ -34,10 +34,11 @@ def process_packet(packet):
             elif clientHello.version == 772:
                 version = "TLS v1.3"
 
-            print(clientHello.ext[0:1].summary())
-            print(time + " " + version + " " + str(ipLayer.src) + ":" + str(ethLayer.sport) + " -> " + str(ipLayer.dst) + ":" + str(ethLayer.dport))
+            svrName = clientHello.getlayer("ServerName").servername.decode("UTF-8")
 
-            exit()
+            print(time + " " + version + " " + str(ipLayer.src) + ":" + str(ethLayer.sport) + " -> " + str(ipLayer.dst) + ":" + str(ethLayer.dport) + " " + svrName)
+
+            #exit()
 
         #print(packet.show2())
         #exit()
@@ -60,6 +61,7 @@ try:
             packets = rdpcap(currentValue)
             for packet in packets:
                 process_packet(packet)
+            exit()
 
 
            
@@ -73,7 +75,7 @@ except getopt.error as err:
     print (str(err))
 
 
-sniff(prn=process_packet, count=100)
+sniff(prn=process_packet, count=-1)
 
 
 
