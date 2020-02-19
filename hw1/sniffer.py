@@ -19,12 +19,24 @@ def process_packet(packet):
 
     if packet.haslayer("TLS"):
         tlsLayer = packet.getlayer("TLS")
-        packet.show2()
+        # packet.show2()
         # print(tlsLayer.type)
-        if tlsLayer.type == 22:
-            print("aa")
+        if packet.haslayer('TLSClientHello'):
+            clientHello = packet.getlayer('TLSClientHello')
+            
+            version = "TLS x"
+            if clientHello.version == 769:
+                version = "TLS v1.0"
+            elif clientHello.version == 770:
+                version = "TLS v1.1"
+            elif clientHello.version == 771:
+                version = "TLS v1.2"
+            elif clientHello.version == 772:
+                version = "TLS v1.3"
 
-            #####33print(tlsLayer.msg)
+            print(clientHello.ext[0:1].summary())
+            print(time + " " + version + " " + str(ipLayer.src) + ":" + str(ethLayer.sport) + " -> " + str(ipLayer.dst) + ":" + str(ethLayer.dport))
+
             exit()
 
         #print(packet.show2())
