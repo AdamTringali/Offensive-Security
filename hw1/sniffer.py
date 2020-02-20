@@ -25,14 +25,15 @@ def process_packet(packet):
             clientHello = packet.getlayer('TLSClientHello')
             
             version = "TLS x"
-            if clientHello.version == 769:
-                version = "TLS v1.0"
-            elif clientHello.version == 770:
-                version = "TLS v1.1"
+
+            if clientHello.version == 772:
+                version = "TLS v1.3"
             elif clientHello.version == 771:
                 version = "TLS v1.2"
-            elif clientHello.version == 772:
-                version = "TLS v1.3"
+            elif clientHello.version == 770:
+                version = "TLS v1.1"
+            elif clientHello.version == 769:
+                version = "TLS v1.0"
 
             svrName = clientHello.getlayer("ServerName").servername.decode("UTF-8")
 
@@ -56,26 +57,29 @@ try:
     for currentArgument, currentValue in arguments: 
   
         if currentArgument in ("-r"): 
-            print ("-r specified")
-            print(currentValue)
             packets = rdpcap(currentValue)
             for packet in packets:
                 process_packet(packet)
             exit()
-
-
-           
-                
               
         elif currentArgument in ("-i"): 
-            print ("-i specified") 
+            print ("-i specified")
+            print(currentValue)
+        else:
+            print("else, " + currentArgument)
               
-except getopt.error as err: 
+except (getopt.error, OSError) as err: 
     # output error, and return with an error code 
     print (str(err))
+    exit()
 
 
-sniff(prn=process_packet, count=-1)
+
+# filter – BPF filter to apply.
+# iface – interface or list of interfaces (default: None for sniffing on all interfaces).
+
+
+sniff(prn=process_packet, count=0)
 
 
 
