@@ -38,25 +38,29 @@ def process_packet(packet):
 
 argumentList = sys.argv[1:] 
 options = "i:r:"
+rflag = 0
+iflag = 0
+interface = ""
+expression = ""
+filename = ""
 
 try: 
     # Parsing argument 
     arguments, values = getopt.getopt(argumentList, options) 
+
+    if len(argumentList)%2 == 1:
+        expression = argumentList[-1]
       
     # checking each argument 
     for currentArgument, currentValue in arguments: 
   
         if currentArgument in ("-r"): 
-            packets = rdpcap(currentValue)
-            for packet in packets:
-                process_packet(packet)
-            exit()
+            rflag = 1
+            filename = currentValue
               
-        elif currentArgument in ("-i"): 
-            print ("-i specified")
-            print(currentValue)
-        else:
-            print("else, " + currentArgument)
+        if currentArgument in ("-i"): 
+            iflag = 1
+            interface = currentValue
               
 except (getopt.error, OSError) as err: 
     # output error, and return with an error code 
@@ -66,6 +70,46 @@ except (getopt.error, OSError) as err:
 # filter – BPF filter to apply.
 # iface – interface or list of interfaces (default: None for sniffing on all interfaces).
 # iface = "eth0"
-# iface not allowed [eth1, wlan0]
-sniff(prn=process_packet, count=0, iface="icmp")
+# iface not allowed [eth1, wlan0, icmp]
+if rflag == 1:
+    if iflag == 1:
+        print("-r specified. '-i " + interface + "' discarded.")
+    try:
+        packets = rdpcap(filename)
+        for packet in packets:
+            if not expression == ""
+                if expression in packet:
+                    process_packet(packet)
+            else:
+                process_packet(packet)
+    except (OSError, FileNotFoundError) as err:  
+        print (str(err))
+
+    exit()
+
+
+if rflag == 0 and iflag == 0 and expression == "":
+    print("no r or i flag. sniffing indefinitely")
+    sniff(prn=process_packet, count=0)
+elif iflag == 1:
+    if expression == "":
+        try: 
+            sniff(prn=process_packet, count=0, iface=interface)
+        except:
+            print("error")
+            exit()
+    else:
+        try: 
+            sniff(prn=process_packet, count=0, iface=interface, filter=expression)
+        except:
+            print("error")
+            exit()
+elif expression != "":
+    print("BPF filter: " + expression)
+    try: 
+        sniff(prn=process_packet, count=0, filter=expression)
+    except:
+        print("BPF filter errors:", sys.exc_info()[0])
+        exit()
+
 
