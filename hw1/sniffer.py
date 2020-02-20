@@ -6,21 +6,17 @@ load_layer('http')
 load_layer('tls')
 
 def process_packet(packet):
-    # print(packet.show2())
     time = str(datetime.fromtimestamp(packet.time))
     ipLayer = packet.getlayer("IP")
     ethLayer = packet.getlayer("TCP")
 
     if packet.haslayer("HTTPRequest"):
-        # print(packet.show())
         httpLayer = packet.getlayer("HTTP Request")
         print(time + " HTTP " + str(ipLayer.src) + ":" + str(ethLayer.sport) + " -> " + str(ipLayer.dst) + ":" + str(ethLayer.dport) + " " + str(httpLayer.Host.decode('UTF-8')) 
             + " " + str(httpLayer.Method.decode('UTF-8')) + " " + str(httpLayer.Path.decode('UTF-8')))
 
     if packet.haslayer("TLS"):
         tlsLayer = packet.getlayer("TLS")
-        # packet.show2()
-        # print(tlsLayer.type)
         if packet.haslayer('TLSClientHello'):
             clientHello = packet.getlayer('TLSClientHello')
             
@@ -38,12 +34,6 @@ def process_packet(packet):
             svrName = clientHello.getlayer("ServerName").servername.decode("UTF-8")
 
             print(time + " " + version + " " + str(ipLayer.src) + ":" + str(ethLayer.sport) + " -> " + str(ipLayer.dst) + ":" + str(ethLayer.dport) + " " + svrName)
-
-            #exit()
-
-        #print(packet.show2())
-        #exit()
-    	#print("packet has tcp")
 
 
 argumentList = sys.argv[1:] 
@@ -73,21 +63,9 @@ except (getopt.error, OSError) as err:
     print (str(err))
     exit()
 
-
-
 # filter – BPF filter to apply.
 # iface – interface or list of interfaces (default: None for sniffing on all interfaces).
+# iface = "eth0"
+# iface not allowed [eth1, wlan0]
+sniff(prn=process_packet, count=0, iface="icmp")
 
-
-sniff(prn=process_packet, count=0)
-
-
-
-
-
-
-# sniff(count=10,prn=process_packet)
-
-# load_layer("http")
-
-# load_layer("tls")
