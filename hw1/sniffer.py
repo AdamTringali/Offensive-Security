@@ -61,6 +61,9 @@ try:
         if currentArgument in ("-i"): 
             iflag = 1
             interface = currentValue
+            if not (interface == "lo" or interface == "eth0"):
+                print("'" + interface + "' interface not available. Choose from: [eth0, lo]")
+                exit()
               
 except (getopt.error, OSError) as err: 
     # output error, and return with an error code 
@@ -71,17 +74,22 @@ except (getopt.error, OSError) as err:
 # iface – interface or list of interfaces (default: None for sniffing on all interfaces).
 # iface = "eth0"
 # iface not allowed [eth1, wlan0, icmp]
+
+
 if rflag == 1:
     if iflag == 1:
         print("-r specified. '-i " + interface + "' discarded.")
     try:
         packets = rdpcap(filename)
+        print(expression)
         for packet in packets:
-            if not expression == ""
+            if expression == "":
+                process_packet(packet)
+            else:
                 if expression in packet:
                     process_packet(packet)
-            else:
-                process_packet(packet)
+
+
     except (OSError, FileNotFoundError) as err:  
         print (str(err))
 

@@ -1,0 +1,17 @@
+README:
+Author: Adam Tringali SBU ID: 111321401
+sniffer.py [-i interface] [-r tracefile] expression
+
+-i  Listen on network device <interface> (e.g., eth0) indefinitely. If not
+    specified, the program should pick a default interface to listen on.
+-r  Read packets from <tracefile> (tcpdump format). Useful for analyzing
+    network traces that have been captured previously.
+The optional <expression> argument is a BPF filter that specifies a subset of
+the traffic to be monitored (similar to tcpdump).
+
+Your tool should perform the following operations
+1) HTTP traffic, GET and POST requests are parsed and printed along with the host name and the request URI
+2) TLS traffic, the Client Hello message is parsed and printed along with the version number, destination host name
+
+-i --> seems to only work with the following interfaces [eth0, lo]
+<expression> --> some of the expressions that work - HTTPRequest, 'port 80', 
