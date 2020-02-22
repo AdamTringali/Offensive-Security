@@ -14,4 +14,12 @@ Your tool should perform the following operations
 2) TLS traffic, the Client Hello message is parsed and printed along with the version number, destination host name
 
 -i --> seems to only work with the following interfaces [eth0, lo]
-<expression> --> some of the expressions that work - HTTPRequest, 'port 80', 
+-r <tracefile.pcap> <expression> --> When filtering a trace file some of the expressions that work: [HTTP, TLS]
+sniffer.py <expression> --> When filtering with no trace file some of the expressions that work: ['port 80', 'port 443', ...]
+sniffer.py [-I interface] <expression> --> has the same available expressions as above
+
+Example output: 
+
+2020-02-19 00:53:57 HTTP 10.0.2.15:50542 -> 72.246.67.115:80 tdbank.com GET /
+2020-02-19 00:54:23 TLS v1.2 10.0.2.15:52204 -> 143.204.151.109:443 snippets.cdn.mozilla.net
+
